@@ -36,7 +36,7 @@ class simple(object):
 
 	def h_get_isurl(self,tables,url): #接口获取到的域名 然后判断域名是否存在 如果存在就如裤
 		try:		
-			ip = socket.gethostbyname(url);
+			ip = socket.gethostbyname(url.replace('http://',''));
 			
 			
 		except Exception,e: #请求超时 说明没有
