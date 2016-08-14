@@ -44,5 +44,6 @@ mysql-> source __DIR__/wcnc_db.sql
 
 
 
-工具使用视频：http://pan.baidu.com/s/1dFe6wil
+工具使用视频：http://pan.baidu.com/s/1hrVI7q8
+
 
