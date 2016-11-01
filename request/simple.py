@@ -1,11 +1,11 @@
 # -*- coding=utf-8 -*-
 import requests,re,sys,time,threading,socket;
+import dns.resolver
 sys.path.append("..")
 from mysql.DB import DB;
-
+import core;
 db_plus = DB();
 class simple(object):
-	
 	walk = 0;
 	walk2 = 0;
 	recursion_walk=0
@@ -28,44 +28,27 @@ class simple(object):
 	def h_post_text(self,url,canshu): #获取源码
 		try:
 			r = requests.post(url,headers=self.header2,data=canshu,timeout=7);  
-
 			return r.text.encode('utf-8'); 
 		except Exception,e:
 			#print'\033[1;31;40m'+"Exception: %s  Error: %s " % (Exception,e) +'\033[0m';
 			return '';
 
 	def h_get_isurl(self,tables,url): #接口获取到的域名 然后判断域名是否存在 如果存在就如裤
-		try:		
-			ip = socket.gethostbyname(url.replace('http://',''));
-			
-			
+		try:	
+			url = url.replace('http://','').replace('https://','');
+			i_resolver=dns.resolver.Resolver()
+			i_resolver.nameservers=core.default_dns;
+			ip = i_resolver.query(url,'A')
+			if ip[0] :
+				ip = ip[0];
 		except Exception,e: #请求超时 说明没有
-			
+			print e,Exception;
 			ip = False;
 		
-		if ip != False and ip != '127.0.0.1' and not re.findall('^192.168',ip) and not re.findall('^10.0',ip): #如果域名存在的话
-				
-			db_plus.Domain_storage(tables.replace('.','_'),url.replace('http://',''),ip); #入裤
-
-
-
+		if ip and not core.Blacklist_ip.count(ip) : #如果域名存在的话
+			db_plus.Domain_storage(tables.replace('.','_'),url,ip); #入裤
 			print '\033[1;33;1m   Successful storage  ^_^. \033[0m';
 			
-
-	def h_get_for_isurl(self,tables,url): #接口获取到的域名 然后判断域名是否存在 如果存在就如裤
-		try:
-			r = requests.get(url,headers=self.header2,timeout=5);  
-			isurl_html = r.text.encode('utf-8'); #获取源码
-			r = 'window.location="http://search.114so.cn/+';
-			if re.search(r,isurl_html) == None and re.search("<title>Access forbidden!</title>",isurl_html) == None: #如果域名存在的话
-				ip = socket.gethostbyname(url.replace('http://',''));
-				db_plus.Domain_storage(tables.replace('.','_'),url.replace('http://',''),ip); #入裤
-				print '\033[1;33;1m   Successful storage  ^_^. \033[0m';
-		except Exception,e:
-			return False;
-
-
-
 
 
 
@@ -78,45 +61,12 @@ class simple(object):
 
 		this = simple();
 		for x in range(len(lis)):
+			simple.walk = simple.walk +1;
 			h_url = lis[x][0]+"."+url;
-
 			this.is_url(h_url,url)
-			time.sleep(1);
+			time.sleep(0.5);
 
-	def is_url(self,url,tables):
-		try:
-			ip = socket.gethostbyname(url);
-			simple.walk = simple.walk +1;
-			
-		except Exception,e: #请求超时 说明没有
-			simple.walk = simple.walk +1;
-			ip = False;
-		if ip != False and ip != '127.0.0.1' and not re.findall('^192.168',ip) and not re.findall('^10.0',ip): #如果域名存在的话
-			
-			url2 = url.replace('http://','');
-			tables = tables.replace('.','_');
-			db_plus.Domain_storage(tables,url2,ip); #入裤
-
-
-###########################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
 
 
 
@@ -129,34 +79,28 @@ class simple(object):
 		for x in range(len(lis)):
 
 			h_url = lis[x][0]+"."+url;
-			this.recursion_is_url(h_url,tables);
 
-			time.sleep(4);
+			this.is_url(h_url,tables);
+
+			
 			
 			
 		# for tt in a:
 		#    	tt.join(); #等待所有线程结束
 
-	def recursion_is_url(self,url,tables):
-		
-		try:			
-			ip = socket.gethostbyname(url);
-			simple.walk2 = simple.walk2 +1;
+
+	def is_url(self,url,tables):
+		try:
+			url = url.replace('http://','').replace('https://','');
+			resolver=dns.resolver.Resolver()
+			resolver.nameservers=core.default_dns;
+			ip = resolver.query(url,'A')
+			if ip[0] :
+				ip = ip[0];
+		except Exception,e: #如果没有
 			
-		except Exception,e: #请求超时 说明没有
-			simple.walk2 = simple.walk2 +1;
 			ip = False;
-		
-		if ip != False and ip != '127.0.0.1' and not re.findall('^192.168',ip) and not re.findall('^10.0',ip): #如果域名存在的话
 			
-			url2 = url.replace('http://','');
-			db_plus.Domain_storage(tables,url2,ip); #入裤
-
-		
-
-
-
-###########################################################################
-
-	
-
+		if ip and not core.Blacklist_ip.count(ip): #如果域名存在的话 and IP不是黑名单的话
+			tables = tables.replace('.','_');
+			db_plus.Domain_storage(tables,url,ip); #入裤

@@ -1,5 +1,5 @@
 #-*-coding:utf-8 -*-
-import time,threading,sys;
+import time,threading,sys,core,dns.resolver;
 from  mysql.DB import DB;
 from table.tabulate import tabulate
 from table.picture import *
@@ -46,4 +46,24 @@ def table_print(tables): #表格
 
 
 	print tabulate(table_lis, table_top, tablefmt="grid")
+
+
+def Loop_acquisition_IP():
+	
+	for url in core.Blacklist_url:
+		my_resolver=dns.resolver.Resolver();
+		my_resolver.nameservers=core.default_dns
+		# 需要查询的域名
+		try:
+			ip=my_resolver.query(url,'A')[0];
+		except Exception,e:
+			ip = False;
+		
+		if ip != False and  not core.Blacklist_ip.count(ip):
+			core.Blacklist_ip.append(ip);
+
+
+
+
+
 

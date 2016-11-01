@@ -1,8 +1,9 @@
 # -*- coding=utf-8 -*-
-import threading,sys,time;
+import threading,sys,time,datetime;
 sys.path.append("..")
 from mysql.DB import DB;
 from request.simple import simple 
+import function;
 class blast(simple):
 	xiancheng = [];
 	"""爆破域名"""
@@ -16,6 +17,7 @@ class blast(simple):
 		jiewei = fenliang;
 		self.simple = simple();
 		print '\033[1;36;1m Is finishing the dictionary, ready to send all requests \r \033[0m'
+		function.Loop_acquisition_IP(); #爆破之前 先获取黑名单IP
 		while True:
 			list2 = lis[kaishi:jiewei]; #获取成员份量
 			t = threading.Thread(target=self.simple.h_get_blast_text,args=[url,list2]); #判断是否存在域名 如果有就入库 表名是url的值
@@ -31,8 +33,8 @@ class blast(simple):
 		
 		print '\033[1;36;1m All requests are sent, waiting for a response. √ \r \033[0m'
 		
-		inhour = 7; 
-		for x in xrange(7):
+		inhour = 5; 
+		for x in xrange(5):
 
 			progress.write('\033[1;36;1m Still need to wait %i \r \033[0m' % inhour);
 			progress.flush();
@@ -41,19 +43,19 @@ class blast(simple):
 		print '\r \n';
 		print '\033[1;36;1m Need a little time ..... \r\n \033[0m'
 		print '\n '
-		while True:
-			
-			progress.write("\033[1;32;1m mdomain: %s ----total: %i , ----Already request:%i  \r \033[0m" % (url,total,simple.walk) );
-			progress.flush();
-			if simple.walk+1800 >= total:
-				print ' \n \n Send request: %i' % (total)
-				print '\n Wait for all requests to end! '
-				break;
-			time.sleep(0.2);
-		
-		for tt in blast_i:
- 	   		tt.join(); #等待所有线程结束
- 	   	print '\r \n'
+
+		for xx in blast_i:
+			while True:
+				if not xx.isAlive():
+					break;	
+				else:
+					progress.write("\033[1;32;1m mdomain: %s ----total: %i , ----Already request:%i  \r \033[0m" % (url,total,simple.walk) );
+					progress.flush();
+					time.sleep(0.12);
+
+
+		print ' \n \n  The whole process is completed. ^_^'
+		print '\n Wait for all requests to end! '
  	   	print '\033[1;36;1m oK,Sorting data √ \033[0m';
 
 
@@ -73,9 +75,9 @@ class blast(simple):
 		jiewei = fenliang;
 		
 		self.simple = simple();
-		
+		now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		for recursion_url in url_list:
-			print " URL:"+recursion_url[0]+"-->\033[1;32;1m  Send out all the requests \r \033[0m"
+			print " URL:"+recursion_url[0]+"-->\033[1;32;1m  Send out all the requests  Current time:  %s \r \033[0m" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 			while True:
 				list2 = lis[kaishi:jiewei]; #获取成员份量
 				
@@ -96,5 +98,5 @@ class blast(simple):
 		for tt in blast.xiancheng:
 		   	tt.join(); #等待所有线程结束
 
-		print "\033[1;32;1m  Above the domain name to send complete 0o(^_^)o0\r \033[0m   <--"
+		print "\033[1;32;1m  <--Above the domain name to send complete 0o(^_^)o0  Current time: %s \033[0m  \r\n" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
 

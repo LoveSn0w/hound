@@ -76,6 +76,8 @@ class DB(CORE):
 
 
 
+
+
 ######################爬虫#########################################
 
 	def p_increase(self,sql): #增 删 改 数据方法
@@ -84,23 +86,6 @@ class DB(CORE):
 			self.db.commit();#提交数据
 		except Exception,e:
 			print '';
-
-	def p_url_increase(self,tables,url,domain): #爬虫的url入裤
-
-		try:
-
-			sql = "select count(*) from %s where url = '%s'" % (tables,url);
-
-			if DB().query(sql) == 0:#入库之前 先判断数据库是否含有相同信息 如果没有就入裤
-				sql = "insert into %s values(null,'%s','%s',0) " % (tables,url,domain);
-				
-				self.mysql.execute(sql); #操作数据
-
-				self.db.commit();#提交数据
-		except Exception,e:
-			
-			return False;
-
 
 
 

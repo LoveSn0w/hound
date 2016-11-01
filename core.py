@@ -1,5 +1,18 @@
 # -*- coding:utf-8 -*-
 import MySQLdb;
+default_dns = [
+	'8.8.8.8',
+	'8.8.4.4'];
+
+Blacklist_url=[
+'dflkjadlfkjasldf.qq.com',
+'dflkjadlfk2.youku.com',
+'dflkjadlfk2.163.com',
+'dflkjadlfk2.tudou.com'
+]
+
+Blacklist_ip=[];
+
 class CORE():
 	
 	'mysql 登录'

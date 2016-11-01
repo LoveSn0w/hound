@@ -37,7 +37,9 @@ sudo apt-get install beautifulsoup4
 
 sudo apt-get install requests
 
+4.dnspython
 
+pip install dnspython
 
 mysql-> source __DIR__/wcnc_db.sql
 
